@@ -121,13 +121,6 @@ Therefore, each image initially contains:
 
 ---
 
-## Part 2 — PCA Dimensionality Reduction
-
-Paste this **after Part 1**:
-
-```markdown
----
-
 # 📉 PCA Dimensionality Reduction
 
 Principal Component Analysis (PCA) was used to reduce the dimensionality of the standardized image features while retaining the majority of the information in the dataset.
@@ -150,11 +143,6 @@ The dimensionality was therefore reduced from:
 1,024 → 57 features
 
 
----
-
-## Part 3 — MLP Neural Network
-
-```markdown
 ---
 
 # 🤖 MLP Neural Network
@@ -185,11 +173,6 @@ Output Layer
 
 ---
 
-## Part 4 — SGD Optimization
-
-```markdown
----
-
 # ⚙️ SGD Optimization
 
 The MLP was optimized using **Stochastic Gradient Descent (SGD)**.
@@ -215,11 +198,6 @@ Learning Rate = 0.01
 Momentum      = 0.95
 
 
----
-
-## Part 5 — Model Evaluation
-
-```markdown
 ---
 
 # 📈 Model Evaluation
@@ -303,10 +281,6 @@ MLP + SGD
 
 ---
 
-## Part 10 — Weather-wise Performance
-
-```markdown
----
 
 # 🌦️ Weather-wise Performance
 
@@ -397,11 +371,6 @@ Lowest Accuracy   : 89.50% (Partly Cloudy)
 
 
 
----
-
-## Part 18 — Author
-
-```markdown
 ---
 
 # 👩‍💻 Author
