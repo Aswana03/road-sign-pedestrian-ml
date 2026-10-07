@@ -1,0 +1,33 @@
+# BDD100K raw images and generated datasets
+images/
+dataset/
+_kaggle_temp/
+
+# Large annotation files
+det_v2_train_release.json
+det_v2_val_release.json
+
+# Generated CSV files
+train_objects.csv
+val_objects.csv
+train_selected.csv
+cropped_objects.csv
+
+# Temporary download/error files
+failed_images.txt
+required_train_images.txt
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
