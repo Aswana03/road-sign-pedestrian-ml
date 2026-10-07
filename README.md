@@ -1,162 +1,418 @@
-\# Road Sign and Pedestrian Classification Under Varying Weather Conditions
+# 🚦 Road Sign & Pedestrian Classification Using PCA and MLP-SGD
+
+A machine learning system for classifying road-scene objects as **pedestrians** or **traffic signs** under varying weather conditions using **Principal Component Analysis (PCA)** and a **Multi-Layer Perceptron (MLP)** optimized with **Stochastic Gradient Descent (SGD)**.
+
+The project uses a balanced subset of the **BDD100K autonomous driving dataset** and evaluates the model using classification metrics, ROC and Precision-Recall curves, 5-fold cross-validation, and weather-wise performance analysis.
+
+> **Note:** The implemented machine learning model performs classification of cropped road objects. It is not an end-to-end object detection/localization system.
+
+---
+
+## 🎯 Objectives
+
+- Classify road-scene objects into **pedestrian** and **traffic sign** categories.
+- Reduce high-dimensional image features using **PCA**.
+- Determine an appropriate number of PCA components using explained variance.
+- Implement an **MLP neural network** for classification.
+- Optimize the MLP using **Stochastic Gradient Descent (SGD)**.
+- Evaluate the model using accuracy, precision, recall, F1-score, ROC-AUC, and PR-AUC.
+- Use **5-fold cross-validation** to assess model stability and reduce dependence on a single data split.
+- Analyze model performance under different weather conditions.
 
+---
 
+# 📊 Dataset
 
-A machine learning system for classifying pedestrians and traffic signs under varying weather conditions using the BDD100K dataset.
+The project uses the **BDD100K** autonomous driving dataset.
 
+### Dataset Source
 
+- BDD100K: https://bdd-data.berkeley.edu/
+- BDD100K Paper: https://arxiv.org/abs/1805.04687
 
-\## Project Overview
+A balanced subset was created from the BDD100K object annotations.
 
+### Selected Classes
 
+| Class | Samples |
+|---|---:|
+| Pedestrian | 2,500 |
+| Traffic Sign | 2,500 |
+| **Total** | **5,000** |
 
-This project implements a machine learning pipeline involving:
+### Weather Distribution
 
+Five weather conditions were selected with equal representation:
 
+| Weather | Samples |
+|---|---:|
+| Clear | 1,000 |
+| Overcast | 1,000 |
+| Partly Cloudy | 1,000 |
+| Rainy | 1,000 |
+| Snowy | 1,000 |
+| **Total** | **5,000** |
 
-\- BDD100K dataset analysis
+Only **non-occluded and non-truncated** target objects were selected for the balanced dataset.
 
-\- Object extraction and dataset balancing
+---
 
-\- Image cropping using bounding-box annotations
+# 🔄 Methodology
 
-\- Grayscale image preprocessing
+The overall machine learning pipeline is:
 
-\- Feature standardization
+```text
+                 BDD100K Dataset
+                        │
+                        ▼
+              Object Annotation Filtering
+                        │
+                        ▼
+              Pedestrian / Traffic Sign
+                        │
+                        ▼
+               Balanced Weather Dataset
+                        │
+                        ▼
+                Bounding Box Cropping
+                        │
+                        ▼
+                 32 × 32 Grayscale
+                        │
+                        ▼
+                  1024 Features
+                        │
+                        ▼
+                Standardization
+                        │
+                        ▼
+                       PCA
+                        │
+                        ▼
+                 57 PCA Features
+                        │
+                        ▼
+                  MLP Classifier
+                        │
+                        ▼
+                 SGD Optimization
+                        │
+                        ▼
+              Cross-Validation & Evaluation
 
-\- PCA-based dimensionality reduction
+---
 
-\- MLP classification
+# 🖼️ Image Preprocessing
 
-\- Stochastic Gradient Descent optimization
+The selected objects were extracted using their bounding-box annotations from the BDD100K dataset.
 
-\- Cross-validation
+Each cropped image was:
 
-\- ROC and Precision-Recall analysis
+1. Resized to **32 × 32 pixels**
+2. Converted to **grayscale**
+3. Flattened into a feature vector
+4. Standardized before PCA
 
-\- Accuracy, Precision, Recall and F1-score evaluation
+Therefore, each image initially contains:
 
+```text
+32 × 32 = 1,024 features
 
 
-\## Current Progress
+---
 
+## Part 2 — PCA Dimensionality Reduction
 
+Paste this **after Part 1**:
 
-\### PCA Preprocessing
+```markdown
+---
 
+# 📉 PCA Dimensionality Reduction
 
+Principal Component Analysis (PCA) was used to reduce the dimensionality of the standardized image features while retaining the majority of the information in the dataset.
 
-The selected object images are resized to 32 × 32 grayscale images.
+The explained variance analysis produced the following results:
 
+| Explained Variance | PCA Components |
+|---:|---:|
+| 80% | 8 |
+| 85% | 14 |
+| 90% | 25 |
+| **95%** | **57** |
+| 99% | 198 |
 
+Based on the explained variance analysis, **57 PCA components** were selected, retaining approximately **95% of the original variance**.
 
-Original feature size:
+The dimensionality was therefore reduced from:
 
+```text
+1,024 → 57 features
 
 
-32 × 32 = 1024 features
+---
 
+## Part 3 — MLP Neural Network
 
+```markdown
+---
 
-PCA reduces the feature space to 57 components while retaining approximately 95% of the variance.
+# 🤖 MLP Neural Network
 
+A Multi-Layer Perceptron (MLP) was implemented to classify the PCA-reduced image features into two classes:
 
+- Pedestrian
+- Traffic Sign
 
-\## Dataset
+### Architecture
 
+```text
+Input Layer
+57 PCA Features
+      │
+      ▼
+Hidden Layer
+128 Neurons
+      │
+      ▼
+Hidden Layer
+64 Neurons
+      │
+      ▼
+Output Layer
+2 Classes
 
 
-The project uses the BDD100K dataset.
+---
 
+## Part 4 — SGD Optimization
 
+```markdown
+---
 
-The dataset contains images captured under different weather and environmental conditions.
+# ⚙️ SGD Optimization
 
+The MLP was optimized using **Stochastic Gradient Descent (SGD)**.
 
+Different combinations of learning rate and momentum were evaluated to identify the best-performing configuration.
 
-Target classes:
+| Learning Rate | Momentum | Validation Accuracy |
+|---:|---:|---:|
+| 0.0001 | 0.00 | 77.30% |
+| 0.0001 | 0.90 | 83.70% |
+| 0.0001 | 0.95 | 85.10% |
+| 0.001 | 0.00 | 83.90% |
+| 0.001 | 0.90 | 89.60% |
+| 0.001 | 0.95 | 89.50% |
+| 0.01 | 0.00 | 89.00% |
+| 0.01 | 0.90 | 90.10% |
+| **0.01** | **0.95** | **90.30%** |
 
+The best-performing configuration was:
 
+```text
+Learning Rate = 0.01
+Momentum      = 0.95
 
-\- Pedestrian
 
-\- Traffic Sign
+---
 
+## Part 5 — Model Evaluation
 
+```markdown
+---
 
-\## Pipeline
+# 📈 Model Evaluation
 
+The optimized model was evaluated using:
 
+- Accuracy
+- Precision
+- Recall
+- F1-score
+- ROC-AUC
+- Precision-Recall AUC
+- Confusion Matrix
 
-BDD100K  
+## Hold-Out Validation Results
 
-↓  
+| Metric | Result |
+|---|---:|
+| Accuracy | **90.30%** |
+| Pedestrian Precision | **92.60%** |
+| Pedestrian Recall | **87.60%** |
+| Pedestrian F1-score | **90.03%** |
+| ROC-AUC | **0.9566** |
+| PR-AUC | **0.9525** |
 
-Object Annotation Extraction  
+---
 
-↓  
+# 🔢 Confusion Matrix
 
-Balanced Dataset Creation  
+The confusion matrix obtained on the validation set was:
 
-↓  
+```text
+                    Predicted
+                 Pedestrian   Sign
 
-Object Cropping  
+Actual
+Pedestrian          438        62
+Traffic Sign         35       465
 
-↓  
 
-32 × 32 Grayscale Images  
 
-↓  
+---
 
-1024 Pixel Features  
+## Part 7 — ROC Curve
 
-↓  
+```markdown
+---
 
-Standardization  
+# 📊 ROC Curve
 
-↓  
+![ROC Curve](results/evaluation/roc_curve.png)
 
-PCA  
+The model achieved a **ROC-AUC of 0.9566**, indicating strong class discrimination across different classification thresholds.
 
-↓  
+---
 
-57 Features  
+# 📌 Precision-Recall Curve
 
-↓  
+![Precision-Recall Curve](results/evaluation/precision_recall_curve.png)
 
-MLP + SGD  
+The model achieved a **PR-AUC of 0.9525**, showing strong precision-recall performance.
 
-↓  
 
-Classification and Evaluation
+---
 
+# 🔬 5-Fold Cross-Validation
 
+To assess the stability of the model and reduce dependence on a single train-validation split, **Stratified 5-Fold Cross-Validation** was performed.
 
-\## Project Status
+The cross-validation pipeline applies preprocessing within each fold:
 
+```text
+StandardScaler
+      ↓
+PCA (95% explained variance)
+      ↓
+MLP + SGD
 
 
-\- \[x] Dataset analysis
 
-\- \[x] Object extraction
 
-\- \[x] Balanced dataset creation
+---
 
-\- \[x] Image downloading
+## Part 10 — Weather-wise Performance
 
-\- \[x] Object cropping
+```markdown
+---
 
-\- \[x] PCA preprocessing
+# 🌦️ Weather-wise Performance
 
-\- \[x] Explained variance analysis
+The model was additionally evaluated under the five selected weather conditions using out-of-fold predictions.
 
-\- \[ ] MLP implementation
+| Weather | Samples | Accuracy | Precision | Recall | F1-score |
+|---|---:|---:|---:|---:|---:|
+| Clear | 1,000 | 91.20% | 91.31% | 91.20% | 91.19% |
+| Overcast | 1,000 | 90.90% | 90.90% | 90.90% | 90.90% |
+| Partly Cloudy | 1,000 | 89.50% | 89.50% | 89.50% | 89.50% |
+| Rainy | 1,000 | 90.90% | 90.90% | 90.90% | 90.90% |
+| Snowy | 1,000 | **92.70%** | **92.71%** | **92.70%** | **92.70%** |
 
-\- \[ ] SGD optimization
+### Observation
 
-\- \[ ] Cross-validation
+The model maintained relatively consistent performance across the selected weather conditions.
 
-\- \[ ] ROC and Precision-Recall evaluation
+- **Best performance:** Snowy — 92.70%
+- **Lowest performance:** Partly Cloudy — 89.50%
+- **Performance range:** 3.20 percentage points
 
-\- \[ ] Final model evaluation
+This indicates that the model was reasonably robust to the weather variations represented in the selected dataset.
 
+
+---
+
+# 🛠️ Technologies Used
+
+### Programming & Libraries
+
+- Python
+- NumPy
+- Pandas
+- Scikit-learn
+- Pillow
+- Matplotlib
+- Seaborn
+- Jupyter Notebook
+
+### Machine Learning Techniques
+
+- Image preprocessing
+- Feature standardization
+- Principal Component Analysis (PCA)
+- Multi-Layer Perceptron (MLP)
+- Stochastic Gradient Descent (SGD)
+- Stratified K-Fold Cross-Validation
+- ROC analysis
+- Precision-Recall analysis
+
+
+---
+
+# 📌 Key Results
+
+```text
+PCA
+────────────────────────────
+Original Features : 1,024
+PCA Features      : 57
+Variance Retained : ~95%
+
+MLP + SGD
+────────────────────────────
+Architecture      : 57 → 128 → 64 → 2
+Learning Rate     : 0.01
+Momentum          : 0.95
+Optimizer         : SGD
+
+Hold-Out Validation
+────────────────────────────
+Accuracy          : 90.30%
+ROC-AUC           : 0.9566
+PR-AUC            : 0.9525
+
+5-Fold Cross-Validation
+────────────────────────────
+Accuracy          : 91.04% ± 0.65%
+Precision         : 91.08% ± 0.64%
+Recall            : 91.04% ± 0.65%
+F1-score          : 91.04% ± 0.65%
+
+Weather Evaluation
+────────────────────────────
+Best Accuracy     : 92.70% (Snowy)
+Lowest Accuracy   : 89.50% (Partly Cloudy)
+
+
+
+
+---
+
+## Part 18 — Author
+
+```markdown
+---
+
+# 👩‍💻 Author
+
+**Aswana N.**
+
+B.Tech Electronics and Communication Engineering  
+NSS College of Engineering, Palakkad
+
+---
+
+## ⭐ Project Highlights
+
+> **PCA-based dimensionality reduction + optimized MLP with SGD + 5-fold cross-validation + weather-wise evaluation for road-sign and pedestrian classification.**
